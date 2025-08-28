@@ -120,3 +120,31 @@ th {
 #cleaning-schedule li:last-child {
     border-bottom: none;
 }
+
+/* --- Thêm vào cuối file style.css --- */
+
+/* Lớp để ẩn nội dung admin */
+.locked {
+    display: none;
+}
+
+#login-section {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+input[type="password"] {
+    width: calc(100% - 22px);
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.secondary-btn {
+    background-color: #6c757d;
+    margin-left: 10px;
+}
+.secondary-btn:hover {
+    background-color: #5a6268;
+}
