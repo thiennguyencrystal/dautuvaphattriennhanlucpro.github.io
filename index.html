@@ -14,7 +14,18 @@
         <!-- Khu vực Admin -->
         <div class="admin-panel">
             <h2><span class="icon">👑</span> Khu vực Admin</h2>
-            <div class="admin-content">
+            
+            <!-- Phần Đăng Nhập -->
+            <div id="login-section">
+                <p>Vui lòng nhập mật khẩu để thay đổi chi phí.</p>
+                <div class="input-group">
+                    <input type="password" id="password-input" placeholder="Nhập mật khẩu...">
+                </div>
+                <button id="login-btn">Đăng Nhập</button>
+            </div>
+
+            <!-- Nội dung Admin (bị khóa ban đầu) -->
+            <div id="admin-content" class="locked">
                 <div class="input-group">
                     <label for="bill-electricity">Tổng tiền điện:</label>
                     <input type="number" id="bill-electricity" placeholder="Nhập tiền điện...">
@@ -30,6 +41,7 @@
                     <input type="date" id="deadline">
                 </div>
                 <button id="calculate-btn">Lưu và Tính Toán</button>
+                <button id="change-password-btn" class="secondary-btn">Đổi Mật Khẩu</button>
             </div>
         </div>
 
