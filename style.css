@@ -1,130 +1,10 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f7f9;
-    color: #333;
-    line-height: 1.6;
-    margin: 0;
-    padding: 20px;
-}
-
-.container {
-    max-width: 900px;
-    margin: auto;
-    background: #fff;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-h1, h2 {
-    color: #0056b3;
-    border-bottom: 2px solid #eef;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-}
-
-h1 {
-    text-align: center;
-    font-size: 2em;
-}
-
-.icon {
-    margin-right: 10px;
-}
-
-.admin-panel, .member-panel, .schedule-panel {
-    margin-bottom: 30px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-}
-
-.input-group {
-    margin-bottom: 15px;
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-input[type="number"], input[type="text"], input[type="date"] {
-    width: calc(100% - 20px);
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-
-button {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-#add-extra-cost-btn {
-    background-color: #28a745;
-    margin-bottom: 15px;
-}
-#add-extra-cost-btn:hover {
-    background-color: #218838;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-th, td {
-    padding: 12px;
-    border: 1px solid #ddd;
-    text-align: left;
-}
-
-th {
-    background-color: #f2f2f2;
-}
-
-.paid-btn {
-    background-color: #6c757d;
-}
-.paid-btn.paid {
-    background-color: #28a745;
-}
-
-.status-overdue {
-    color: #dc3545;
-    font-weight: bold;
-}
-
-#cleaning-schedule {
-    list-style-type: decimal;
-    padding-left: 20px;
-}
-
-#cleaning-schedule li {
-    padding: 8px;
-    border-bottom: 1px solid #eee;
-}
-
-#cleaning-schedule li:last-child {
-    border-bottom: none;
-}
+/* (phần đầu giữ nguyên như file bạn đang có) */
+/* ... toàn bộ phần CSS hiện tại ... */
 
 /* --- Thêm vào cuối file style.css --- */
 
-/* Lớp để ẩn nội dung admin */
-.locked {
+/* Lớp để ẩn nội dung admin: chỉ áp dụng cho admin-content */
+#admin-content.locked {
     display: none;
 }
 
@@ -132,6 +12,7 @@ th {
     padding: 15px;
     background-color: #f8f9fa;
     border-radius: 5px;
+    margin-bottom: 15px;
 }
 
 input[type="password"] {
