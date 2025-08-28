@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Chi Tiêu Phòng</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Lao Động Là Vinh Quang Pro ✊</h1>
+
+        <!-- Khu vực Admin -->
+        <div class="admin-panel">
+            <h2><span class="icon">👑</span> Khu vực Admin</h2>
+            <div class="admin-content">
+                <div class="input-group">
+                    <label for="bill-electricity">Tổng tiền điện:</label>
+                    <input type="number" id="bill-electricity" placeholder="Nhập tiền điện...">
+                </div>
+                <div class="input-group">
+                    <label for="bill-water">Tổng tiền nước:</label>
+                    <input type="number" id="bill-water" placeholder="Nhập tiền nước...">
+                </div>
+                <div id="extra-costs-container"></div>
+                <button id="add-extra-cost-btn">Thêm chi phí khác</button>
+                <div class="input-group">
+                    <label for="deadline">Deadline đóng tiền:</label>
+                    <input type="date" id="deadline">
+                </div>
+                <button id="calculate-btn">Lưu và Tính Toán</button>
+            </div>
+        </div>
+
+        <!-- Khu vực thành viên -->
+        <div class="member-panel">
+            <h2><span class="icon">👥</span> Bảng Chia Tiền</h2>
+            <p>Tổng chi phí tháng này: <strong id="total-bill">0</strong> VNĐ</p>
+            <table id="members-table">
+                <thead>
+                    <tr>
+                        <th>Thành viên</th>
+                        <th>Số ngày ở</th>
+                        <th>Số tiền cần đóng</th>
+                        <th>Trạng thái</th>
+                        <th>Ghi chú</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dữ liệu sẽ được JS chèn vào đây -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Lịch trực -->
+        <div class="schedule-panel">
+            <h2><span class="icon">📅</span> Lịch Trực Tuần</h2>
+            <p>(Ưu tiên: Chưa đóng tiền trực trước, đã đóng tiền sẽ xếp sau theo thứ tự đóng)</p>
+            <ol id="cleaning-schedule">
+                <!-- Lịch trực sẽ được JS chèn vào đây -->
+            </ol>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
