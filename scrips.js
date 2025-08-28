@@ -1,16 +1,19 @@
 document.addEventListener('DOMContentLoaded', function() {
     // ---- CẤU HÌNH BAN ĐẦU ----
-    // Thay đổi tên thành viên trong phòng của bạn ở đây
     const initialMembers = [
-        { name: 'Thành viên A' },
-        { name: 'Thành viên B' },
-        { name: 'Thành viên C' },
-        { name: 'Thành viên D' },
-        { name: 'Thành viên E' },
-        { name: 'Thành viên F' }
+        { name: 'Thành viên A' }, { name: 'Thành viên B' },
+        { name: 'Thành viên C' }, { name: 'Thành viên D' },
+        { name: 'Thành viên E' }, { name: 'Thành viên F' }
     ];
+    const PASSWORD_KEY = 'adminPasswordHash';
 
     // ---- LẤY CÁC THÀNH PHẦN HTML ----
+    const loginSection = document.getElementById('login-section');
+    const passwordInput = document.getElementById('password-input');
+    const loginBtn = document.getElementById('login-btn');
+    const adminContent = document.getElementById('admin-content');
+    const changePasswordBtn = document.getElementById('change-password-btn');
+
     const electricityInput = document.getElementById('bill-electricity');
     const waterInput = document.getElementById('bill-water');
     const extraCostsContainer = document.getElementById('extra-costs-container');
@@ -24,6 +27,90 @@ document.addEventListener('DOMContentLoaded', function() {
     let members = [];
     let bills = { electricity: 0, water: 0, extra: [], deadline: '' };
 
+    // ---- LOGIC MẬT KHẨU ----
+    // Hàm băm đơn giản (không phải mã hóa) để tránh lưu mật khẩu gốc.
+    // Chỉ để che giấu, không phải để bảo mật cấp cao.
+    const simpleHash = str => {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = (hash << 5) - hash + char;
+            hash &= hash; // Convert to 32bit integer
+        }
+        return hash.toString();
+    };
+
+    function checkLogin() {
+        if (sessionStorage.getItem('isAdminLoggedIn') === 'true') {
+            unlockAdminPanel();
+        } else {
+            lockAdminPanel();
+        }
+    }
+
+    function unlockAdminPanel() {
+        loginSection.style.display = 'none';
+        adminContent.classList.remove('locked');
+    }
+
+    function lockAdminPanel() {
+        loginSection.style.display = 'block';
+        adminContent.classList.add('locked');
+        sessionStorage.removeItem('isAdminLoggedIn');
+    }
+
+    function handleLogin() {
+        const storedHash = localStorage.getItem(PASSWORD_KEY);
+        const enteredPassword = passwordInput.value;
+
+        if (!storedHash) {
+            alert('Chưa có mật khẩu. Vui lòng đặt mật khẩu lần đầu.');
+            handleSetInitialPassword();
+            return;
+        }
+
+        if (simpleHash(enteredPassword) === storedHash) {
+            sessionStorage.setItem('isAdminLoggedIn', 'true');
+            unlockAdminPanel();
+        } else {
+            alert('Mật khẩu không chính xác!');
+        }
+        passwordInput.value = '';
+    }
+
+    function handleSetInitialPassword() {
+        const newPassword = prompt('Đây là lần đầu tiên, vui lòng đặt mật khẩu admin:');
+        if (newPassword) {
+            localStorage.setItem(PASSWORD_KEY, simpleHash(newPassword));
+            alert('Đặt mật khẩu thành công! Bây giờ hãy đăng nhập.');
+        }
+    }
+    
+    function handleChangePassword() {
+        const currentPassword = prompt('Vui lòng nhập mật khẩu HIỆN TẠI:');
+        const storedHash = localStorage.getItem(PASSWORD_KEY);
+
+        if (!currentPassword || simpleHash(currentPassword) !== storedHash) {
+            alert('Mật khẩu hiện tại không đúng. Thao tác bị hủy.');
+            return;
+        }
+
+        const newPassword = prompt('Nhập mật khẩu MỚI:');
+        if (!newPassword) {
+            alert('Mật khẩu mới không được để trống. Thao tác bị hủy.');
+            return;
+        }
+
+        const confirmPassword = prompt('Xác nhận lại mật khẩu MỚI:');
+        if (newPassword !== confirmPassword) {
+            alert('Mật khẩu xác nhận không khớp. Thao tác bị hủy.');
+            return;
+        }
+
+        localStorage.setItem(PASSWORD_KEY, simpleHash(newPassword));
+        alert('Đổi mật khẩu thành công!');
+    }
+
     // ---- HÀM LƯU VÀ TẢI DỮ LIỆU ----
     function saveData() {
         localStorage.setItem('roomData', JSON.stringify({ members, bills }));
@@ -35,12 +122,8 @@ document.addEventListener('DOMContentLoaded', function() {
             members = data.members;
             bills = data.bills;
         } else {
-            // Khởi tạo lần đầu
             members = initialMembers.map(m => ({
-                ...m,
-                days: 30, // Mặc định ở 30 ngày
-                paid: false,
-                paidDate: null
+                ...m, days: 30, paid: false, paidDate: null
             }));
         }
         updateUI();
@@ -48,67 +131,67 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ---- HÀM CẬP NHẬT GIAO DIỆN ----
     function updateUI() {
-        // Cập nhật các ô input của admin
         electricityInput.value = bills.electricity || '';
         waterInput.value = bills.water || '';
         deadlineInput.value = bills.deadline || '';
         
         extraCostsContainer.innerHTML = '';
-        bills.extra.forEach((cost, index) => {
-            addExtraCostInput(cost.name, cost.amount);
-        });
+        if (bills.extra) {
+            bills.extra.forEach(cost => {
+                addExtraCostInput(cost.name, cost.amount);
+            });
+        }
 
-        // Tính toán và hiển thị
         calculateAndRender();
     }
     
     // ---- HÀM TÍNH TOÁN VÀ HIỂN THỊ ----
     function calculateAndRender() {
-        // Cập nhật lại giá trị bill từ input
-        bills.electricity = parseFloat(electricityInput.value) || 0;
-        bills.water = parseFloat(waterInput.value) || 0;
-        bills.deadline = deadlineInput.value;
-        bills.extra = [];
-        document.querySelectorAll('.extra-cost-item').forEach(item => {
-            const name = item.querySelector('.extra-cost-name').value;
-            const amount = parseFloat(item.querySelector('.extra-cost-amount').value) || 0;
-            if (name && amount > 0) {
-                bills.extra.push({ name, amount });
-            }
-        });
+        // Chỉ admin mới có quyền lấy dữ liệu từ input để tính
+        if (sessionStorage.getItem('isAdminLoggedIn') === 'true') {
+            bills.electricity = parseFloat(electricityInput.value) || 0;
+            bills.water = parseFloat(waterInput.value) || 0;
+            bills.deadline = deadlineInput.value;
+            bills.extra = [];
+            document.querySelectorAll('.extra-cost-item').forEach(item => {
+                const name = item.querySelector('.extra-cost-name').value;
+                const amount = parseFloat(item.querySelector('.extra-cost-amount').value) || 0;
+                if (name && amount > 0) {
+                    bills.extra.push({ name, amount });
+                }
+            });
+        }
 
-        const totalExtra = bills.extra.reduce((sum, cost) => sum + cost.amount, 0);
-        const totalBill = bills.electricity + bills.water + totalExtra;
+        const totalExtra = (bills.extra || []).reduce((sum, cost) => sum + cost.amount, 0);
+        const totalBill = (bills.electricity || 0) + (bills.water || 0) + totalExtra;
         totalBillEl.textContent = totalBill.toLocaleString('vi-VN');
 
         const totalPersonDays = members.reduce((sum, member) => sum + parseInt(member.days || 0), 0);
         const costPerDay = totalPersonDays > 0 ? totalBill / totalPersonDays : 0;
 
-        membersTableBody.innerHTML = ''; // Xóa bảng cũ
+        membersTableBody.innerHTML = '';
         members.forEach((member, index) => {
             const amountOwed = costPerDay * member.days;
             const row = document.createElement('tr');
-
-            // Cột tên
-            const cellName = `<td>${member.name}</td>`;
             
-            // Cột số ngày ở
+            const cellName = `<td>${member.name}</td>`;
             const cellDays = `<td><input type="number" class="days-input" data-index="${index}" value="${member.days}" min="0"></td>`;
-
-            // Cột số tiền
             const cellAmount = `<td>${Math.round(amountOwed).toLocaleString('vi-VN')} VNĐ</td>`;
             
-            // Cột trạng thái
-            const paidButtonText = member.paid ? 'Đã Đóng' : 'Chưa Đóng';
-            const paidButtonClass = member.paid ? 'paid' : '';
-            const cellStatus = `<td><button class="paid-btn ${paidButtonClass}" data-index="${index}">${paidButtonText}</button></td>`;
-            
-            // Cột ghi chú (quá hạn)
+            // Chỉ admin mới có thể thay đổi trạng thái đóng tiền
+            let cellStatus;
+            if (sessionStorage.getItem('isAdminLoggedIn') === 'true') {
+                const paidButtonText = member.paid ? 'Đã Đóng' : 'Chưa Đóng';
+                const paidButtonClass = member.paid ? 'paid' : '';
+                cellStatus = `<td><button class="paid-btn ${paidButtonClass}" data-index="${index}">${paidButtonText}</button></td>`;
+            } else {
+                cellStatus = `<td>${member.paid ? 'Đã đóng' : 'Chưa đóng'}</td>`;
+            }
+
             let note = '';
             if (!member.paid && bills.deadline) {
                 const deadlineDate = new Date(bills.deadline);
                 const today = new Date();
-                // Set hours to 0 to compare dates only
                 deadlineDate.setHours(0,0,0,0);
                 today.setHours(0,0,0,0);
 
@@ -133,9 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const paidMembers = members.filter(m => m.paid).sort((a, b) => new Date(a.paidDate) - new Date(b.paidDate));
         const unpaidMembers = members.filter(m => !m.paid);
 
-        // Ai chưa đóng tiền thì trực trước, ai đóng rồi thì trực sau (đóng trước trực sau cùng)
         const scheduleOrder = [...unpaidMembers, ...paidMembers];
-        
         const daysOfWeek = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'];
         scheduleOrder.forEach((member, index) => {
             const li = document.createElement('li');
@@ -146,16 +227,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ---- HÀM XỬ LÝ SỰ KIỆN ----
     function handleTableClick(e) {
+        if (sessionStorage.getItem('isAdminLoggedIn') !== 'true') return;
+        
         const target = e.target;
-        // Xử lý nút Đóng tiền
         if (target.classList.contains('paid-btn')) {
             const index = target.dataset.index;
             members[index].paid = !members[index].paid;
-            if (members[index].paid) {
-                members[index].paidDate = new Date(); // Ghi lại thời gian đóng tiền
-            } else {
-                members[index].paidDate = null;
-            }
+            members[index].paidDate = members[index].paid ? new Date() : null;
             saveData();
             calculateAndRender();
         }
@@ -165,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if(e.target.classList.contains('days-input')) {
             const index = e.target.dataset.index;
             members[index].days = parseInt(e.target.value) || 0;
-            // Không lưu ngay để tránh lưu liên tục, chỉ khi bấm nút "Tính toán" mới lưu
+            // Admin sẽ bấm nút "Lưu và Tính toán" để cập nhật số ngày ở này
         }
     }
 
@@ -180,6 +258,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ---- GẮN CÁC BỘ LẮNG NGHE SỰ KIỆN ----
+    loginBtn.addEventListener('click', handleLogin);
+    passwordInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            handleLogin();
+        }
+    });
+    changePasswordBtn.addEventListener('click', handleChangePassword);
+
     addExtraCostBtn.addEventListener('click', () => addExtraCostInput());
     calculateBtn.addEventListener('click', () => {
         calculateAndRender();
@@ -190,5 +276,9 @@ document.addEventListener('DOMContentLoaded', function() {
     membersTableBody.addEventListener('input', handleDaysChange);
 
     // ---- KHỞI CHẠY ----
+    if (!localStorage.getItem(PASSWORD_KEY)) {
+        handleSetInitialPassword();
+    }
+    checkLogin();
     loadData();
 });
