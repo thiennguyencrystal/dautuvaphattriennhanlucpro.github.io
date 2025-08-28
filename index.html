@@ -11,21 +11,18 @@
     <div class="container">
         <h1>Lao Động Là Vinh Quang Pro ✊</h1>
 
+        <!-- Phần Login (cho admin) -->
+        <div id="login-section">
+            <label for="password-input"><strong>Đăng nhập Admin</strong></label>
+            <input type="password" id="password-input" placeholder="Nhập mật khẩu admin...">
+            <button id="login-btn">Đăng nhập</button>
+        </div>
+
         <!-- Khu vực Admin -->
         <div class="admin-panel">
             <h2><span class="icon">👑</span> Khu vực Admin</h2>
-            
-            <!-- Phần Đăng Nhập -->
-            <div id="login-section">
-                <p>Vui lòng nhập mật khẩu để thay đổi chi phí.</p>
-                <div class="input-group">
-                    <input type="password" id="password-input" placeholder="Nhập mật khẩu...">
-                </div>
-                <button id="login-btn">Đăng Nhập</button>
-            </div>
-
-            <!-- Nội dung Admin (bị khóa ban đầu) -->
-            <div id="admin-content" class="locked">
+            <!-- Ghi cả id và class để script thao tác -->
+            <div id="admin-content" class="admin-content locked">
                 <div class="input-group">
                     <label for="bill-electricity">Tổng tiền điện:</label>
                     <input type="number" id="bill-electricity" placeholder="Nhập tiền điện...">
@@ -41,7 +38,8 @@
                     <input type="date" id="deadline">
                 </div>
                 <button id="calculate-btn">Lưu và Tính Toán</button>
-                <button id="change-password-btn" class="secondary-btn">Đổi Mật Khẩu</button>
+                <!-- Nút đổi mật khẩu chỉ hiển thị/được JS gán hành vi -->
+                <button id="change-password-btn" class="secondary-btn">Đổi mật khẩu</button>
             </div>
         </div>
 
@@ -76,6 +74,7 @@
 
     </div>
 
-    <script src="script.js"></script>
+    <!-- Ghi đúng tên file script: scrips.js -->
+    <script src="scrips.js"></script>
 </body>
 </html>
